@@ -1,0 +1,57 @@
+name: Audit Notebook Imports
+
+on:
+  workflow_dispatch:
+    inputs:
+      python-version:
+        description: "Python version for the generated environment"
+        required: false
+        default: "3.11"
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: Audit notebook imports
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install audit tools
+        run: pip install nbformat stdlib-list
+
+      - name: Scan notebooks and build SBOM
+        env:
+          TARGET_PY: ${{ inputs.python-version }}
+        run: |
+          mkdir -p audit-output
+          python .github/scripts/audit_notebook_imports.py \
+            --root . \
+            --out-dir audit-output \
+            --target-python "${TARGET_PY}"
+
+      - name: Show summary
+        run: |
+          echo "## Notebook Import Audit" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          cat audit-output/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Generated environment.yml" >> "$GITHUB_STEP_SUMMARY"
+          echo '```yaml' >> "$GITHUB_STEP_SUMMARY"
+          cat audit-output/environment.yml >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload audit results
+        uses: actions/upload-artifact@v4
+        with:
+          name: notebook-audit
+          path: audit-output/
+          retention-days: 30
