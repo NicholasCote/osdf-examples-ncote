@@ -1,0 +1,44 @@
+name: nb-env
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - jupyter
+  - nbconvert
+  - ipykernel
+  - aiohttp
+  - cartopy
+  - cf_units
+  - cftime
+  - dask
+  - dask_gateway
+  - dask_jobqueue
+  - distributed
+  - fsspec
+  - geocat
+  - geopandas
+  - intake
+  - intake_esm
+  - matplotlib
+  - nc_time_axis
+  - nest_asyncio
+  - netcdf4
+  - numpy
+  - pandas
+  - pyproj
+  - pystac_client
+  - rasterio
+  - requests
+  - s3fs
+  - scikit-learn
+  - scipy
+  - seaborn
+  - shapely
+  - tqdm
+  - uxarray
+  - xarray
+  - xarray_regrid
+  - xhistogram
+  - pip:
+      - pelicanfs
