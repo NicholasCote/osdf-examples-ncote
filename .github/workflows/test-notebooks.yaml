@@ -3,10 +3,6 @@ name: Test Notebooks
 on:
   workflow_dispatch:
     inputs:
-      python-version:
-        description: "Python version to use"
-        required: false
-        default: "3.11"
       timeout-minutes:
         description: "Per-notebook execution timeout (minutes)"
         required: false
@@ -67,56 +63,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Locate requirements file
-        id: reqs
-        run: |
-          set -euo pipefail
-          nb_dir="$(dirname "${{ matrix.notebook }}")"
-          dir="$nb_dir"
-          found=""
-          while :; do
-            if [ -f "$dir/requirements.txt" ]; then
-              found="$dir/requirements.txt"
-              break
-            fi
-            [ "$dir" = "." ] && break
-            dir="$(dirname "$dir")"
-          done
-
-          if [ -z "$found" ]; then
-            echo "No requirements.txt found for ${{ matrix.notebook }}"
-            echo "requirements=" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          # Strip local build paths, blank lines, and comments from conda-generated files
-          cleaned="/tmp/requirements-cleaned.txt"
-          grep -vE '^\s*(#|$)' "$found" \
-            | grep -vE '^(/|file:)' \
-            | sed -E 's/\s+#.*$//' \
-            > "$cleaned"
-
-          echo "Using $found (cleaned -> $cleaned):"
-          cat "$cleaned"
-          echo "requirements=$cleaned" >> "$GITHUB_OUTPUT"
-
       - name: Set up conda environment
         uses: mamba-org/setup-micromamba@v2
         with:
-          environment-name: nb-test
-          create-args: >-
-            python=${{ inputs.python-version }}
-            jupyter
-            nbconvert
-            ipykernel
-          init-shell: bash
+          environment-file: environment.yml
           cache-environment: true
-
-      - name: Install notebook requirements
-        if: steps.reqs.outputs.requirements != ''
-        run: |
-          set -euo pipefail
-          micromamba install -y -n nb-test -c conda-forge --file "${{ steps.reqs.outputs.requirements }}"
+          cache-downloads: true
 
       - name: Execute notebook
         run: |
