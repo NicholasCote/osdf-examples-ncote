@@ -58,7 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     container:
-      image: ghcr.io/${{ github.repository }}/notebook-env:${{ inputs.image-tag }}
+      image: ghcr.io/nicholascote/osdf-examples-ncote/notebook-env:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
