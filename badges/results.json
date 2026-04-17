@@ -1,0 +1,157 @@
+[
+  {
+    "notebook": "notebooks/cesm_bias.ipynb",
+    "status": "fail",
+    "job_url": "https://github.com/NicholasCote/osdf-examples-ncote/actions/runs/24589380992"
+  },
+  {
+    "notebook": "notebooks/cesm_gmst_ncar.ipynb",
+    "status": "pass",
+    "job_url": "https://github.com/NicholasCote/osdf-examples-ncote/actions/runs/24589380992"
+  },
+  {
+    "notebook": "notebooks/cesm_oceanheat.ipynb",
+    "status": "fail",
+    "job_url": "https://github.com/NicholasCote/osdf-examples-ncote/actions/runs/24589380992"
+  },
+  {
+    "notebook": "notebooks/cesm_osdf_stampede3.ipynb",
+    "status": "fail",
+    "job_url": "https://github.com/NicholasCote/osdf-examples-ncote/actions/runs/24589380992"
+  },
+  {
+    "notebook": "notebooks/cmip6_ecs.ipynb",
+    "status": "pass",
+    "job_url": "https://github.com/NicholasCote/osdf-examples-ncote/actions/runs/24589380992"
+  },
+  {
+    "notebook": "notebooks/cmip6_gmst_zarr.ipynb",
+    "status": "fail",
+    "job_url": "https://github.com/NicholasCote/osdf-examples-ncote/actions/runs/24589380992"
+  },
+  {
+    "notebook": "notebooks/cmip6_precipitation.ipynb",
+    "status": "fail",
+    "job_url": "https://github.com/NicholasCote/osdf-examples-ncote/actions/runs/24589380992"
+  },
+  {
+    "notebook": "notebooks/conus404.ipynb",
+    "status": "fail",
+    "job_url": "https://github.com/NicholasCote/osdf-examples-ncote/actions/runs/24589380992"
+  },
+  {
+    "notebook": "notebooks/eol_era5.ipynb",
+    "status": "pass",
+    "job_url": "https://github.com/NicholasCote/osdf-examples-ncote/actions/runs/24589380992"
+  },
+  {
+    "notebook": "notebooks/era5_precip.ipynb",
+    "status": "fail",
+    "job_url": "https://github.com/NicholasCote/osdf-examples-ncote/actions/runs/24589380992"
+  },
+  {
+    "notebook": "notebooks/geocat_climatology.ipynb",
+    "status": "pass",
+    "job_url": "https://github.com/NicholasCote/osdf-examples-ncote/actions/runs/24589380992"
+  },
+  {
+    "notebook": "notebooks/hadisst_elnino.ipynb",
+    "status": "pass",
+    "job_url": "https://github.com/NicholasCote/osdf-examples-ncote/actions/runs/24589380992"
+  },
+  {
+    "notebook": "notebooks/hrrr_aws.ipynb",
+    "status": "fail",
+    "job_url": "https://github.com/NicholasCote/osdf-examples-ncote/actions/runs/24589380992"
+  },
+  {
+    "notebook": "notebooks/jetstream_cesm_oceanheat.ipynb",
+    "status": "fail",
+    "job_url": "https://github.com/NicholasCote/osdf-examples-ncote/actions/runs/24589380992"
+  },
+  {
+    "notebook": "notebooks/jetstream_cmip6_gmst.ipynb",
+    "status": "pass",
+    "job_url": "https://github.com/NicholasCote/osdf-examples-ncote/actions/runs/24589380992"
+  },
+  {
+    "notebook": "notebooks/jetstream_intro.ipynb",
+    "status": "pass",
+    "job_url": "https://github.com/NicholasCote/osdf-examples-ncote/actions/runs/24589380992"
+  },
+  {
+    "notebook": "notebooks/jra_3q.ipynb",
+    "status": "fail",
+    "job_url": "https://github.com/NicholasCote/osdf-examples-ncote/actions/runs/24589380992"
+  },
+  {
+    "notebook": "notebooks/ml_workflows/nino3.4_index.ipynb",
+    "status": "pass",
+    "job_url": "https://github.com/NicholasCote/osdf-examples-ncote/actions/runs/24589380992"
+  },
+  {
+    "notebook": "notebooks/na_cordex.ipynb",
+    "status": "pass",
+    "job_url": "https://github.com/NicholasCote/osdf-examples-ncote/actions/runs/24589380992"
+  },
+  {
+    "notebook": "notebooks/ndc_workflows/aws_benchmark.ipynb",
+    "status": "fail",
+    "job_url": "https://github.com/NicholasCote/osdf-examples-ncote/actions/runs/24589380992"
+  },
+  {
+    "notebook": "notebooks/ndc_workflows/envistor_test_ap40.ipynb",
+    "status": "fail",
+    "job_url": "https://github.com/NicholasCote/osdf-examples-ncote/actions/runs/24589380992"
+  },
+  {
+    "notebook": "notebooks/ndc_workflows/ncar_benchmark.ipynb",
+    "status": "fail",
+    "job_url": "https://github.com/NicholasCote/osdf-examples-ncote/actions/runs/24589380992"
+  },
+  {
+    "notebook": "notebooks/ndc_workflows/ncar_benchmark_ap40.ipynb",
+    "status": "fail",
+    "job_url": "https://github.com/NicholasCote/osdf-examples-ncote/actions/runs/24589380992"
+  },
+  {
+    "notebook": "notebooks/ndc_workflows/ncar_benchmark_simple.ipynb",
+    "status": "fail",
+    "job_url": "https://github.com/NicholasCote/osdf-examples-ncote/actions/runs/24589380992"
+  },
+  {
+    "notebook": "notebooks/ndc_workflows/pycogss_spectral_change.ipynb",
+    "status": "fail",
+    "job_url": "https://github.com/NicholasCote/osdf-examples-ncote/actions/runs/24589380992"
+  },
+  {
+    "notebook": "notebooks/ndc_workflows/sonar_ai.ipynb",
+    "status": "pass",
+    "job_url": "https://github.com/NicholasCote/osdf-examples-ncote/actions/runs/24589380992"
+  },
+  {
+    "notebook": "notebooks/old_workflows/cesm_access.ipynb",
+    "status": "fail",
+    "job_url": "https://github.com/NicholasCote/osdf-examples-ncote/actions/runs/24589380992"
+  },
+  {
+    "notebook": "notebooks/old_workflows/cesm_aws.ipynb",
+    "status": "fail",
+    "job_url": "https://github.com/NicholasCote/osdf-examples-ncote/actions/runs/24589380992"
+  },
+  {
+    "notebook": "notebooks/saag.ipynb",
+    "status": "fail",
+    "job_url": "https://github.com/NicholasCote/osdf-examples-ncote/actions/runs/24589380992"
+  },
+  {
+    "notebook": "notebooks/simple_aws_example.ipynb",
+    "status": "pass",
+    "job_url": "https://github.com/NicholasCote/osdf-examples-ncote/actions/runs/24589380992"
+  },
+  {
+    "notebook": "notebooks/uxarray_test.ipynb",
+    "status": "fail",
+    "job_url": "https://github.com/NicholasCote/osdf-examples-ncote/actions/runs/24589380992"
+  }
+]
