@@ -1,5 +1,4 @@
 name: Test Notebooks
-
 on:
   workflow_dispatch:
     inputs:
@@ -13,7 +12,7 @@ on:
         default: "20"
 
 permissions:
-  contents: read
+  contents: write
   packages: read
 
 jobs:
@@ -25,7 +24,6 @@ jobs:
       count: ${{ steps.find.outputs.count }}
     steps:
       - uses: actions/checkout@v4
-
       - id: find
         name: Build notebook matrix
         run: |
@@ -37,14 +35,12 @@ jobs:
             -not -path '*/venv/*' \
             | sed 's|^\./||' \
             | sort)
-
           if [ "${#files[@]}" -eq 0 ]; then
             echo "No notebooks found"
             echo "notebooks=[]" >> "$GITHUB_OUTPUT"
             echo "count=0" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-
           json=$(printf '%s\n' "${files[@]}" | jq -R . | jq -sc .)
           echo "Found ${#files[@]} notebooks:"
           printf '  %s\n' "${files[@]}"
@@ -58,7 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     container:
-      image: ghcr.io/nicholascote/osdf-examples-ncote/notebook-env:latest
+      image: ghcr.io/nicholascote/osdf-examples-ncote/notebook-env:${{ inputs.image-tag }}
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -72,6 +68,8 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Execute notebook
+        id: exec
+        continue-on-error: true
         run: |
           mkdir -p /tmp/executed
           jupyter nbconvert \
@@ -80,6 +78,33 @@ jobs:
             --output-dir /tmp/executed \
             --ExecutePreprocessor.timeout=$((${{ inputs.timeout-minutes }} * 60)) \
             --ExecutePreprocessor.kernel_name=python3
+
+      - name: Record status
+        if: always()
+        run: |
+          mkdir -p /tmp/status
+          safe="$(echo '${{ matrix.notebook }}' | tr '/' '_' | sed 's/\.ipynb$//')"
+          if [ "${{ steps.exec.outcome }}" = "success" ]; then
+            status="pass"
+          else
+            status="fail"
+          fi
+          cat > "/tmp/status/${safe}.json" <<EOF
+          {
+            "notebook": "${{ matrix.notebook }}",
+            "status": "${status}",
+            "job_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          }
+          EOF
+          cat "/tmp/status/${safe}.json"
+
+      - name: Upload status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: status-${{ strategy.job-index }}
+          path: /tmp/status/
+          retention-days: 7
 
       - name: Upload executed notebook
         if: always()
@@ -90,20 +115,127 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
-  summary:
-    name: Summary
+      - name: Fail step if execution failed
+        if: steps.exec.outcome == 'failure'
+        run: exit 1
+
+  publish-badges:
+    name: Publish badges
     needs: [discover, test]
     if: always() && needs.discover.outputs.count != '0'
     runs-on: ubuntu-latest
     steps:
-      - name: Report results
+      - uses: actions/checkout@v4
+
+      - name: Download all status artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: status-*
+          path: /tmp/statuses
+          merge-multiple: true
+
+      - name: Aggregate results
+        id: agg
         run: |
-          echo "## Notebook Test Results" >> "$GITHUB_STEP_SUMMARY"
+          set -euo pipefail
+          mkdir -p badges/notebooks
+
+          total=0
+          passed=0
+          failed=0
+
+          {
+            echo "# Notebook Test Status"
+            echo ""
+            echo "_Updated: $(date -u +"%Y-%m-%d %H:%M UTC")_"
+            echo ""
+            echo "| Notebook | Status |"
+            echo "|----------|--------|"
+          } > badges/status-table.md
+
+          echo "[]" > badges/results.json
+
+          for f in /tmp/statuses/*.json; do
+            [ -f "$f" ] || continue
+            total=$((total + 1))
+            nb=$(jq -r .notebook "$f")
+            st=$(jq -r .status "$f")
+            safe=$(basename "$f" .json)
+
+            if [ "$st" = "pass" ]; then
+              passed=$((passed + 1))
+              color="brightgreen"
+              msg="passing"
+            else
+              failed=$((failed + 1))
+              color="red"
+              msg="failing"
+            fi
+
+            jq -n --arg label "notebook" --arg message "$msg" --arg color "$color" \
+              '{schemaVersion: 1, label: $label, message: $message, color: $color}' \
+              > "badges/notebooks/${safe}.json"
+
+            badge_url="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/${{ github.repository }}/badges/notebooks/${safe}.json"
+            echo "| \`${nb}\` | ![${st}](${badge_url}) |" >> badges/status-table.md
+
+            jq --argjson new "$(cat "$f")" '. += [$new]' badges/results.json > /tmp/r.json && mv /tmp/r.json badges/results.json
+          done
+
+          if [ "$failed" -eq 0 ] && [ "$total" -gt 0 ]; then
+            overall_color="brightgreen"
+          elif [ "$passed" -eq 0 ]; then
+            overall_color="red"
+          else
+            overall_color="yellow"
+          fi
+
+          jq -n \
+            --arg label "notebooks" \
+            --arg message "${passed}/${total} passing" \
+            --arg color "$overall_color" \
+            '{schemaVersion: 1, label: $label, message: $message, color: $color}' \
+            > badges/overall.json
+
+          echo "total=$total"  >> "$GITHUB_OUTPUT"
+          echo "passed=$passed" >> "$GITHUB_OUTPUT"
+          echo "failed=$failed" >> "$GITHUB_OUTPUT"
+
+          echo "## Notebook Test Summary" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "Total notebooks: ${{ needs.discover.outputs.count }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "Image: ghcr.io/${{ github.repository }}/notebook-env:${{ inputs.image-tag }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "Matrix result: ${{ needs.test.result }}" >> "$GITHUB_STEP_SUMMARY"
-          if [ "${{ needs.test.result }}" = "failure" ]; then
-            echo "" >> "$GITHUB_STEP_SUMMARY"
-            echo "One or more notebooks failed — check individual matrix job logs." >> "$GITHUB_STEP_SUMMARY"
+          echo "- Total: ${total}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Passed: ${passed}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Failed: ${failed}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Image: ghcr.io/${{ github.repository }}/notebook-env:${{ inputs.image-tag }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          cat badges/status-table.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publish to badges branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          cp -r badges /tmp/badges-staged
+
+          git fetch origin badges:badges 2>/dev/null || true
+          if git show-ref --verify --quiet refs/heads/badges; then
+            git checkout badges
+            git rm -rf . >/dev/null 2>&1 || true
+          else
+            git checkout --orphan badges
+            git rm -rf . >/dev/null 2>&1 || true
+          fi
+
+          cp -r /tmp/badges-staged/* .
+
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No badge changes"
+          else
+            git commit -m "Update notebook badges (${{ steps.agg.outputs.passed }}/${{ steps.agg.outputs.total }} passing)"
+            git push origin badges
           fi
