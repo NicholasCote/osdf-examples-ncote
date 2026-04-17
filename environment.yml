@@ -22,6 +22,7 @@ dependencies:
   - matplotlib
   - nc-time-axis
   - nest-asyncio
+  - h5netcdf
   - netcdf4
   - numpy
   - pandas
