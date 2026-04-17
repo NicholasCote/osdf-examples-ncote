@@ -9,6 +9,7 @@ dependencies:
   - ipykernel
   - aiohttp
   - cftime
+  - cf-units
   - dask
   - dask-gateway
   - dask-jobqueue
