@@ -12,22 +12,22 @@ dependencies:
   - cf_units
   - cftime
   - dask
-  - dask_gateway
-  - dask_jobqueue
+  - dask-gateway
+  - dask-jobqueue
   - distributed
   - fsspec
-  - geocat
+  - geocat-comp
   - geopandas
   - intake
-  - intake_esm
+  - intake-esm
   - matplotlib
-  - nc_time_axis
-  - nest_asyncio
+  - nc-time-axis
+  - nest-asyncio
   - netcdf4
   - numpy
   - pandas
   - pyproj
-  - pystac_client
+  - pystac-client
   - rasterio
   - requests
   - s3fs
@@ -38,7 +38,7 @@ dependencies:
   - tqdm
   - uxarray
   - xarray
-  - xarray_regrid
+  - xarray-regrid
   - xhistogram
   - pip:
       - pelicanfs
