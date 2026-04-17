@@ -54,6 +54,15 @@ IMPORT_TO_PACKAGE = {
     "IPython": "ipython",
     "notebook": "notebook",
     "jupyter_server": "jupyter-server",
+    # Underscore imports -> hyphen package names (conda-forge convention)
+    "dask_gateway": "dask-gateway",
+    "dask_jobqueue": "dask-jobqueue",
+    "intake_esm": "intake-esm",
+    "nc_time_axis": "nc-time-axis",
+    "nest_asyncio": "nest-asyncio",
+    "pystac_client": "pystac-client",
+    "xarray_regrid": "xarray-regrid",
+    "geocat": "geocat-comp",
 }
 
 # Packages that should be pinned via conda-forge even when a PyPI equivalent exists,

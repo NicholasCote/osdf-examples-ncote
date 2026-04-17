@@ -3,6 +3,10 @@ name: Test Notebooks
 on:
   workflow_dispatch:
     inputs:
+      image-tag:
+        description: "Notebook env image tag to use"
+        required: false
+        default: "latest"
       timeout-minutes:
         description: "Per-notebook execution timeout (minutes)"
         required: false
@@ -10,6 +14,7 @@ on:
 
 permissions:
   contents: read
+  packages: read
 
 jobs:
   discover:
@@ -52,26 +57,23 @@ jobs:
     if: needs.discover.outputs.count != '0'
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    defaults:
-      run:
-        shell: bash -el {0}
+    container:
+      image: ghcr.io/${{ github.repository }}/notebook-env:${{ inputs.image-tag }}
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+      options: --user root
     strategy:
       fail-fast: false
-      max-parallel: 5
+      max-parallel: 10
       matrix:
         notebook: ${{ fromJson(needs.discover.outputs.notebooks) }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up conda environment
-        uses: mamba-org/setup-micromamba@v2
-        with:
-          environment-file: environment.yml
-          cache-environment: true
-          cache-downloads: true
-
       - name: Execute notebook
         run: |
+          mkdir -p /tmp/executed
           jupyter nbconvert \
             --to notebook \
             --execute "${{ matrix.notebook }}" \
@@ -99,6 +101,7 @@ jobs:
           echo "## Notebook Test Results" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "Total notebooks: ${{ needs.discover.outputs.count }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Image: ghcr.io/${{ github.repository }}/notebook-env:${{ inputs.image-tag }}" >> "$GITHUB_STEP_SUMMARY"
           echo "Matrix result: ${{ needs.test.result }}" >> "$GITHUB_STEP_SUMMARY"
           if [ "${{ needs.test.result }}" = "failure" ]; then
             echo "" >> "$GITHUB_STEP_SUMMARY"
