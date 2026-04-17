@@ -8,7 +8,6 @@ dependencies:
   - nbconvert
   - ipykernel
   - aiohttp
-  - cartopy
   - cf_units
   - cftime
   - dask
