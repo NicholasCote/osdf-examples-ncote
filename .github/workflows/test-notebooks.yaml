@@ -223,7 +223,7 @@ jobs:
 
           git fetch origin badges:badges 2>/dev/null || true
           if git show-ref --verify --quiet refs/heads/badges; then
-            git checkout badges
+            git checkout --force badges
             git rm -rf . >/dev/null 2>&1 || true
           else
             git checkout --orphan badges
