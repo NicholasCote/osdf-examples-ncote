@@ -24,6 +24,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+
+      - name: Install jupyter-book
+        run: npm install -g jupyter-book
+
+      - name: Build HTML
+        run: jupyter-book build --html
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -47,7 +57,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          context: .
+          context: ./_build/html
           file: Dockerfile.docs
           push: true
           tags: ${{ steps.meta.outputs.tags }}

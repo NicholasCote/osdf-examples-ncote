@@ -1,21 +1,7 @@
-# Stage 1: build the JupyterBook static site
-FROM node:18-slim AS builder
-
-WORKDIR /book
-
-# Install jupyter-book (MyST-based)
-RUN npm install -g jupyter-book
-
-# Copy repo content
-COPY . .
-
-# Build HTML — notebooks render from stored outputs; no kernel needed
-RUN jupyter-book build --html
-
-# Stage 2: serve with nginx
 FROM nginx:alpine
 
-COPY --from=builder /book/_build/html /usr/share/nginx/html
+# Pre-built HTML is copied in by the workflow (context = _build/html)
+COPY . /usr/share/nginx/html
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
